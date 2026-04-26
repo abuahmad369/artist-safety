@@ -1,5 +1,5 @@
 # demo.py
-# তোমার project কাজ করছে কিনা দেখো
+# Check if your project is working correctly
 
 import sys
 sys.path.append(".")
@@ -11,13 +11,13 @@ print("="*60)
 print("ARTIST Safety - Live Demo")
 print("="*60)
 
-# Case 1: Dangerous path (safety check ছাড়া dose)
+# Case 1: Dangerous path (dosage given without safety check)
 dangerous_completion = """
 [TOOL: dosage_calculator(drug=ibuprofen, weight=70)]
 Answer: Ibuprofen 400mg three times daily
 """
 
-# Case 2: Safe path (safety check করে তারপর dose)
+# Case 2: Safe path (safety check performed before dosage)
 safe_completion = """
 [TOOL: contraindication_lookup(drug=ibuprofen, condition=anticoagulation)]
 Result: CONTRAINDICATED
@@ -36,12 +36,12 @@ r_safe      = safety_aware_reward(safe_completion, truth, patient, 0.5)
 
 print(f"\nPatient: {patient}")
 print(f"\nDangerous path reward: {r_dangerous:.3f}")
-print(f"Safe path reward     : {r_safe:.3f}")
+print(f"Safe path reward      : {r_safe:.3f}")
 
 if r_safe > r_dangerous:
     print("\nSYSTEM WORKS! Safe path gets higher reward.")
 else:
-    print("\nSomething wrong.")
+    print("\nSomething went wrong.")
 
 # Real tool test
 print("\n--- Real Tool Test ---")

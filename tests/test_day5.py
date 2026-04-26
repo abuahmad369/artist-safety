@@ -1,5 +1,5 @@
 # tests/test_day5.py
-# Safety Reward Function test করো
+# Test the Safety Reward Function
 
 import sys
 import os
@@ -21,8 +21,8 @@ print("\n[TEST 1] Patient Risk Detection")
 risks = detect_patient_risks("68F, warfarin 5mg/day, CKD stage 3")
 print(f"  Patient: 68F, warfarin, CKD stage 3")
 print(f"  Risks detected: {risks}")
-assert "anticoagulant" in risks, "warfarin detect হয়নি!"
-assert "renal" in risks, "CKD detect হয়নি!"
+assert "anticoagulant" in risks, "warfarin not detected!"
+assert "renal" in risks, "CKD not detected!"
 print("  ✓ TEST 1 PASSED")
 
 
@@ -44,14 +44,14 @@ Answer: Acetaminophen 500mg is the safest choice.
 
 tools = extract_tool_calls(sample_completion)
 print(f"  Tools found: {tools}")
-assert "contraindication_lookup" in tools, "contraindication_lookup পাওয়া যায়নি!"
-assert "drug_interaction_checker" in tools, "drug_interaction_checker পাওয়া যায়নি!"
+assert "contraindication_lookup" in tools, "contraindication_lookup not found!"
+assert "drug_interaction_checker" in tools, "drug_interaction_checker not found!"
 print("  ✓ TEST 2 PASSED")
 
 
 # ============================================================
 # TEST 3: Safe Path → High Reward
-# AI safety check করে তারপর dose দিয়েছে
+# AI performs safety check before providing dosage
 # ============================================================
 print("\n[TEST 3] Safe Tool Path → High Reward")
 
@@ -72,13 +72,13 @@ reward_safe = safety_aware_reward(
     lambda_val=0.5
 )
 print(f"  Safe path reward: {reward_safe:.3f}")
-assert reward_safe > 0.3, f"Safe path এ reward বেশি হওয়া উচিত! Got: {reward_safe}"
+assert reward_safe > 0.3, f"Reward should be higher for safe paths! Got: {reward_safe}"
 print("  ✓ TEST 3 PASSED")
 
 
 # ============================================================
 # TEST 4: Unsafe Path → Low Reward
-# AI safety check না করেই সরাসরি dose দিয়েছে
+# AI provides dosage directly without safety checks
 # ============================================================
 print("\n[TEST 4] Unsafe Tool Path → Low Reward")
 
@@ -97,13 +97,13 @@ reward_unsafe = safety_aware_reward(
 )
 print(f"  Unsafe path reward: {reward_unsafe:.3f}")
 assert reward_unsafe < reward_safe, \
-    f"Unsafe path এ reward কম হওয়া উচিত! safe={reward_safe:.3f}, unsafe={reward_unsafe:.3f}"
+    f"Reward should be lower for unsafe paths! safe={reward_safe:.3f}, unsafe={reward_unsafe:.3f}"
 print("  ✓ TEST 4 PASSED")
 
 
 # ============================================================
 # TEST 5: Lambda Effect
-# Lambda বাড়ালে safety penalty বেশি হওয়া উচিত
+# Increasing Lambda should increase the safety penalty
 # ============================================================
 print("\n[TEST 5] Lambda Effect on Reward")
 
@@ -116,7 +116,7 @@ for lam in [0.1, 0.5, 1.0, 2.0]:
     )
     print(f"  Lambda={lam}: reward={r:.3f}")
 
-print("  (Lambda বাড়লে unsafe path এর reward কমা উচিত)")
+print("  (As Lambda increases, reward for unsafe paths should decrease)")
 print("  ✓ TEST 5 PASSED")
 
 
@@ -139,7 +139,7 @@ bad_eval = evaluate_tool_sequence(
 print(f"  Good sequence avg penalty: {good_eval['avg_penalty']:.2f} ({good_eval['overall']})")
 print(f"  Bad sequence avg penalty:  {bad_eval['avg_penalty']:.2f} ({bad_eval['overall']})")
 assert good_eval['avg_penalty'] < bad_eval['avg_penalty'], \
-    "Good sequence এ penalty কম হওয়া উচিত!"
+    "Penalty should be lower for good sequences!"
 print("  ✓ TEST 6 PASSED")
 
 
@@ -147,10 +147,10 @@ print("  ✓ TEST 6 PASSED")
 # Summary
 # ============================================================
 print("\n" + "=" * 60)
-print("সব TEST PASSED!")
+print("ALL TESTS PASSED!")
 print(f"\nKey insight:")
 print(f"  Safe path reward  : {reward_safe:.3f}")
 print(f"  Unsafe path reward: {reward_unsafe:.3f}")
 print(f"  Difference        : {reward_safe - reward_unsafe:.3f}")
-print(f"\nএই difference দিয়েই AI শিখবে কোনটা safe!")
+print(f"\nThis difference is how the AI learns what is safe!")
 print("=" * 60)

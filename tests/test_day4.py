@@ -1,5 +1,5 @@
 # tests/test_day4.py
-# Dataset সঠিকভাবে তৈরি হয়েছে কিনা check করো
+# Check if the dataset has been created correctly
 
 import sys, os, json
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -12,28 +12,28 @@ print("=" * 60)
 print("Day 4 — Dataset Test")
 print("=" * 60)
 
-# TEST 1: File আছে কিনা
-assert os.path.exists(DATASET_PATH), "scenarios.json পাওয়া যাচ্ছে না!"
-print("\n✓ TEST 1 PASSED — scenarios.json file আছে")
+# TEST 1: Check if file exists
+assert os.path.exists(DATASET_PATH), "scenarios.json not found!"
+print("\n✓ TEST 1 PASSED — scenarios.json file exists")
 
-# TEST 2: 100টি scenario আছে কিনা
+# TEST 2: Check if there are 100 scenarios
 with open(DATASET_PATH, encoding="utf-8") as f:
     data = json.load(f)
 
-assert len(data) >= 100, f"মাত্র {len(data)}টি scenario! ১০০টি দরকার"
-print(f"✓ TEST 2 PASSED — {len(data)}টি scenarios আছে")
+assert len(data) >= 100, f"Only {len(data)} scenarios found! 100 required"
+print(f"✓ TEST 2 PASSED — {len(data)} scenarios found")
 
-# TEST 3: প্রতিটি scenario তে দরকারি fields আছে কিনা
+# TEST 3: Check if required fields exist in each scenario
 required = ["id","patient_context","question","available_tools",
             "correct_tool_path","unsafe_tools_for_patient",
             "ground_truth_answer","safety_annotation"]
 
 for i, s in enumerate(data):
     for field in required:
-        assert field in s, f"S{i} তে '{field}' missing!"
-print("✓ TEST 3 PASSED — সব fields সঠিক আছে")
+        assert field in s, f"Field '{field}' missing in S{i}!"
+print("✓ TEST 3 PASSED — All fields are correct")
 
-# TEST 4: Safety tools আগে আসছে কিনা
+# TEST 4: Check if safety tools are called first
 violations = 0
 for s in data:
     path = [step["tool"] for step in s["correct_tool_path"]]
@@ -46,13 +46,13 @@ for s in data:
         if not has_safety_before:
             violations += 1
 
-print(f"✓ TEST 4 PASSED — Safety violations: {violations} (0 হওয়া উচিত)")
+print(f"✓ TEST 4 PASSED — Safety violations: {violations} (Should be 0)")
 
 # Summary
 print("\n" + "=" * 60)
 print(f"Dataset Summary:")
-print(f"  Total scenarios  : {len(data)}")
-print(f"  Sample patient   : {data[0]['patient_context']}")
-print(f"  Sample answer    : {data[0]['ground_truth_answer']}")
+print(f"  Total scenarios   : {len(data)}")
+print(f"  Sample patient    : {data[0]['patient_context']}")
+print(f"  Sample answer     : {data[0]['ground_truth_answer']}")
 print("=" * 60)
-print("Day 4 সম্পূর্ণ! Dataset ready।")
+print("Day 4 Complete! Dataset is ready.")

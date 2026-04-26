@@ -1,5 +1,5 @@
 # tests/test_day6.py
-# Kaggle training এর আগে সব কিছু ঠিক আছে কিনা check করো
+# Check if everything is ready before Kaggle training
 
 import sys, os, json
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -11,13 +11,13 @@ print("=" * 60)
 print("Day 6 — Training Setup Test")
 print("=" * 60)
 
-# TEST 1: Dataset load হচ্ছে কিনা
+# TEST 1: Check if dataset loads correctly
 with open("dataset/scenarios.json", encoding="utf-8") as f:
     scenarios = json.load(f)
 assert len(scenarios) >= 100
 print(f"\n✓ TEST 1 PASSED — {len(scenarios)} scenarios loaded")
 
-# TEST 2: Reward function ঠিকমতো কাজ করছে কিনা
+# TEST 2: Check if the reward function is working as expected
 good = """
 [TOOL: contraindication_lookup(drug=ibuprofen, condition=anticoagulation)]
 [TOOL: drug_interaction_checker(drug1=warfarin, drug2=acetaminophen)]
@@ -33,15 +33,15 @@ truth   = "Acetaminophen 500mg"
 r_good = safety_aware_reward(good, truth, patient, 0.5)
 r_bad  = safety_aware_reward(bad,  truth, patient, 0.5)
 
-assert r_good > r_bad, "Good path এ reward বেশি হওয়া উচিত!"
+assert r_good > r_bad, "Reward should be higher for the good path!"
 print(f"✓ TEST 2 PASSED — Good: {r_good:.2f}, Bad: {r_bad:.2f}")
 
-# TEST 3: সব scenarios এ required fields আছে কিনা
+# TEST 3: Check if all scenarios have required fields
 for s in scenarios:
     assert "patient_context" in s
     assert "ground_truth_answer" in s
     assert "correct_tool_path" in s
-print("✓ TEST 3 PASSED — সব scenarios valid")
+print("✓ TEST 3 PASSED — All scenarios are valid")
 
 # TEST 4: Lambda sweep simulation
 print("\nLambda sweep simulation:")
@@ -50,9 +50,9 @@ for lam in [0.1, 0.5, 1.0, 2.0]:
     print(f"  λ={lam}: unsafe path reward = {r:.3f}")
 
 print("\n" + "=" * 60)
-print("সব PASSED! Kaggle এ training দিতে পারো।")
+print("ALL PASSED! Ready for Kaggle training.")
 print("\nPlan:")
 print("  Run 1: LAMBDA = 0.1  (lenient)")
-print("  Run 2: LAMBDA = 0.5  (balanced) ← best হবে সম্ভবত")
+print("  Run 2: LAMBDA = 0.5  (balanced) ← likely the best")
 print("  Run 3: LAMBDA = 1.0  (strict)")
 print("=" * 60)

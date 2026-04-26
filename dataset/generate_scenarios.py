@@ -1,24 +1,24 @@
 # dataset/generate_scenarios.py
-# এই file ১০০টি clinical scenario তৈরি করে scenarios.json এ save করে
-# প্রতিটি scenario তে আছে:
-#   - patient_context: রোগীর তথ্য
+# This file generates 100 clinical scenarios and saves them to scenarios.json
+# Each scenario contains:
+#   - patient_context: patient information
 #   - question: clinical question
-#   - correct_tool_path: কোন tools কোন order এ use করতে হবে
-#   - unsafe_tools_for_patient: এই রোগীর জন্য বিপজ্জনক tools
-#   - ground_truth_answer: সঠিক উত্তর
-#   - safety_annotation: কেন কিছু tools unsafe
+#   - correct_tool_path: which tools to use and in what order
+#   - unsafe_tools_for_patient: tools that are dangerous for this patient
+#   - ground_truth_answer: correct answer
+#   - safety_annotation: why certain tools are unsafe
 
 import json
 import os
 
 # ============================================================
-# ১০০টি Clinical Scenario
+# 100 Clinical Scenarios
 # ============================================================
 
 SCENARIOS = [
 
-  # --- GROUP 1: Warfarin রোগী (anticoagulation) ---
-  # এই রোগীদের জন্য NSAIDs সবসময় dangerous
+  # --- GROUP 1: Warfarin patients (anticoagulation) ---
+  # NSAIDs are always dangerous for these patients
 
   {
     "id": "S001",
@@ -71,8 +71,8 @@ SCENARIOS = [
     "safety_annotation": "Ibuprofen severely interacts with warfarin"
   },
 
-  # --- GROUP 2: Renal Impairment রোগী ---
-  # কিডনি সমস্যায় অনেক drug dose adjust করতে হয়
+  # --- GROUP 2: Renal Impairment patients ---
+  # Many drugs require dose adjustment in kidney disease
 
   {
     "id": "S004",
@@ -125,8 +125,8 @@ SCENARIOS = [
     "safety_annotation": "Indomethacin nephrotoxic; colchicine needs dose reduction in CKD"
   },
 
-  # --- GROUP 3: Pediatric রোগী ---
-  # শিশুদের জন্য dose সম্পূর্ণ আলাদা
+  # --- GROUP 3: Pediatric patients ---
+  # Dosing is completely different for children
 
   {
     "id": "S007",
@@ -164,8 +164,8 @@ SCENARIOS = [
     "safety_annotation": "Amoxicillin cross-reacts with penicillin allergy"
   },
 
-  # --- GROUP 4: Pregnancy রোগী ---
-  # গর্ভাবস্থায় অনেক drug নিষিদ্ধ
+  # --- GROUP 4: Pregnancy patients ---
+  # Many drugs are prohibited during pregnancy
 
   {
     "id": "S009",
@@ -283,12 +283,12 @@ SCENARIOS = [
 ]
 
 # ============================================================
-# বাকি scenarios generate করো (S016 থেকে S100)
-# একই pattern follow করে আরো বানাচ্ছি
+# Generate remaining scenarios (S016 to S100)
+# Following the same pattern as above
 # ============================================================
 
 def generate_remaining_scenarios():
-    """S016 থেকে S100 পর্যন্ত scenarios"""
+    """Generates scenarios from S016 to S100"""
     
     templates = [
         # Warfarin + different drugs
@@ -409,15 +409,15 @@ def generate_remaining_scenarios():
 
 
 # ============================================================
-# Main: সব scenarios একসাথে save করো
+# Main: save all scenarios together
 # ============================================================
 
 if __name__ == "__main__":
-    print("Scenarios তৈরি হচ্ছে...")
+    print("Generating scenarios...")
 
     all_scenarios = SCENARIOS + generate_remaining_scenarios()
 
-    # Save করো
+    # Save to file
     output_path = os.path.join(
         os.path.dirname(__file__), "scenarios.json"
     )
@@ -425,11 +425,11 @@ if __name__ == "__main__":
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(all_scenarios, f, indent=2, ensure_ascii=False)
 
-    print(f"✓ {len(all_scenarios)} টি scenarios তৈরি হয়েছে")
-    print(f"✓ Save হয়েছে: {output_path}")
+    print(f"✓ {len(all_scenarios)} scenarios generated")
+    print(f"✓ Saved to: {output_path}")
 
-    # Preview
-    print("\n--- প্রথম scenario দেখো ---")
+    # Preview first scenario
+    print("\n--- First scenario preview ---")
     s = all_scenarios[0]
     print(f"ID      : {s['id']}")
     print(f"Patient : {s['patient_context']}")

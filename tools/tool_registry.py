@@ -4,7 +4,7 @@ from tools.pharmacological import ContraindicationLookup, DrugInteractionChecker
 TOOL_REGISTRY = {
     'contraindication_lookup': ContraindicationLookup(),
     'drug_interaction_checker': DrugInteractionChecker(),
-    # Day 4-এ আরো যোগ হবে
+    # More will be added on Day 4
 }
 
 TOOL_DESCRIPTIONS = [

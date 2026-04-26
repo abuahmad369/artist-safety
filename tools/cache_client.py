@@ -1,72 +1,72 @@
 # tools/cache_client.py
-# এই file টা API responses cache করে রাখে
-# মানে — প্রথমবার API call হলে result save করে
-# পরের বার same request আসলে saved file থেকে দেয়
+# This file caches API responses
+# Meaning — it saves the result on the first API call
+# For subsequent identical requests, it retrieves data from the saved file
 
-import json      # JSON file read/write করার জন্য
-import os        # folder তৈরি করার জন্য
-import hashlib   # unique file name তৈরি করার জন্য
-import requests  # API call করার জন্য
+import json      # For reading/writing JSON files
+import os        # For directory management
+import hashlib   # For generating unique file names
+import requests  # For making API calls
 
 
 class CachedAPIClient:
     """
-    এই class টা API client এর মতো কাজ করে
-    কিন্তু এটা smart — একই request দুইবার করে না
+    This class acts as an API client but functions intelligently 
+    by avoiding redundant requests for the same data.
     """
     
     def __init__(self, cache_dir="cache"):
-        # cache folder কোথায় থাকবে সেটা set করো
-        # project root থেকে 'cache' folder এ save হবে
+        # Set the location for the cache directory
+        # Data will be saved in the 'cache' folder within the project root
         self.cache_dir = cache_dir
         
-        # folder না থাকলে তৈরি করো
+        # Create the folder if it doesn't exist
         os.makedirs(cache_dir, exist_ok=True)
         print(f"Cache folder ready: {cache_dir}")
     
     def _make_filename(self, url, params):
         """
-        প্রতিটি unique request এর জন্য unique filename তৈরি করো
-        যেমন: OpenFDA+ibuprofen → abc123.json
+        Generate a unique filename for every unique request
+        Example: OpenFDA+ibuprofen → abc123.json
         """
-        # url আর params কে একসাথে string বানাও
+        # Combine url and params into a single string
         request_string = json.dumps(
             {"url": url, "params": params or {}},
-            sort_keys=True  # সবসময় same order এ রাখো
+            sort_keys=True  # Ensure consistent ordering
         )
         
-        # সেই string এর MD5 hash নাও (unique ID এর মতো)
+        # Generate an MD5 hash of that string (acting as a unique ID)
         unique_id = hashlib.md5(request_string.encode()).hexdigest()
         
         return os.path.join(self.cache_dir, f"{unique_id}.json")
     
     def get(self, url, params=None):
         """
-        API call করো — কিন্তু আগে cache check করো
+        Execute API call — but check the cache first
         """
-        # এই request এর জন্য file name কী হবে?
+        # Determine the filename for this specific request
         cache_file = self._make_filename(url, params)
         
-        # Cache-এ আছে কিনা দেখো
+        # Check if it exists in the cache
         if os.path.exists(cache_file):
-            # আছে! File থেকে পড়ো, internet-এ যাওয়া লাগবে না
+            # Found! Read from file, no internet access required
             with open(cache_file, 'r') as f:
-                print(f"  [CACHE HIT] Saved file থেকে data নিচ্ছি")
+                print(f"  [CACHE HIT] Retrieving data from saved file")
                 return json.load(f)
         
-        # Cache-এ নেই — real API call করো
-        print(f"  [API CALL] Internet থেকে data আনছি: {url[:50]}...")
+        # Not in cache — perform a live API call
+        print(f"  [API CALL] Fetching data from internet: {url[:50]}...")
         response = requests.get(url, params=params, timeout=10)
         data = response.json()
         
-        # Result টা cache-এ save করো future use এর জন্য
+        # Save the result to the cache for future use
         with open(cache_file, 'w') as f:
             json.dump(data, f, indent=2)
-        print(f"  [SAVED] cache folder-এ save হলো")
+        print(f"  [SAVED] Data saved to cache folder")
         
         return data
 
 
-# এই একটা object বানাও এবং সব জায়গায় import করো
-# cache folder project root এ থাকবে
+# Instantiate the object to be imported across the project
+# The cache folder will be located in the project root
 client = CachedAPIClient(cache_dir="cache")

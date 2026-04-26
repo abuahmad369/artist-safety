@@ -1,28 +1,28 @@
 # tools/cache_test.py
-# এই file দিয়ে cache কাজ করছে কিনা দেখবো
+# Use this file to verify if the caching mechanism is working
 
 import sys
 import os
 
-# project root folder টা Python কে চেনাও
+# Point Python to the project root folder
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from tools.cache_client import client
 
 print("=" * 50)
-print("Cache Test শুরু হচ্ছে...")
+print("Starting Cache Test...")
 print("=" * 50)
 
-# প্রথমবার — API call হবে এবং cache-এ save হবে
-print("\n--- প্রথমবার call করছি ---")
+# First attempt — API call should trigger and save to cache
+print("\n--- Executing first call ---")
 data1 = client.get(
     "https://rxnav.nlm.nih.gov/REST/rxcui.json",
     params={"name": "warfarin"}
 )
 print("Warfarin ID:", data1["idGroup"]["rxnormId"][0])
 
-# দ্বিতীয়বার — Cache থেকে নেবে, API call হবে না
-print("\n--- দ্বিতীয়বার same call করছি ---")
+# Second attempt — Should retrieve from cache without an API call
+print("\n--- Executing same call a second time ---")
 data2 = client.get(
     "https://rxnav.nlm.nih.gov/REST/rxcui.json",
     params={"name": "warfarin"}
@@ -30,6 +30,6 @@ data2 = client.get(
 print("Warfarin ID:", data2["idGroup"]["rxnormId"][0])
 
 print("\n" + "=" * 50)
-print("দ্বিতীয়বার [CACHE HIT] দেখালে cache কাজ করছে!")
-print("cache folder এ .json file দেখো")
+print("If [CACHE HIT] appeared on the second call, caching is functional!")
+print("Check the cache folder for the generated .json files")
 print("=" * 50)

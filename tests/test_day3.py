@@ -1,27 +1,27 @@
 # tests/test_day3.py
-# Day 3 এর সব tools test করার file
-# এটা শুধু test এর জন্য — project এর main code না
+# File to test all tools for Day 3
+# This is for testing purposes only — not the main project code
 
 import sys
 import os
 
-# project root চেনাও
+# Identify project root
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from tools.tool_registry import TOOL_REGISTRY
 
 print("=" * 60)
-print("Day 3 — Tool Test শুরু হচ্ছে")
+print("Day 3 — Tool Test Starting")
 print("=" * 60)
 
 
 # ============================================================
 # TEST 1: ContraindicationLookup
-# প্রশ্ন: ibuprofen কি renal impairment এ নিষিদ্ধ?
-# সঠিক উত্তর: CONTRAINDICATED (হ্যাঁ, নিষিদ্ধ)
+# Question: Is ibuprofen contraindicated in renal impairment?
+# Expected Result: CONTRAINDICATED (Yes, restricted)
 # ============================================================
 print("\n[TEST 1] Contraindication Lookup")
-print("প্রশ্ন: ibuprofen কি renal impairment রোগীদের জন্য safe?")
+print("Question: Is ibuprofen safe for patients with renal impairment?")
 
 tool1 = TOOL_REGISTRY["contraindication_lookup"]
 result1 = tool1(drug="ibuprofen", condition="renal impairment")
@@ -30,18 +30,18 @@ print(f"\nStatus   : {result1.status}")
 print(f"Reasoning: {result1.reasoning[:200]}")
 
 if result1.status in ["CONTRAINDICATED", "USE_WITH_CAUTION"]:
-    print("✓ TEST 1 PASSED — Tool সঠিকভাবে warning দিচ্ছে")
+    print("✓ TEST 1 PASSED — Tool is correctly providing a warning")
 else:
-    print("△ TEST 1 — SAFE দেখাচ্ছে, FDA data check করো")
+    print("△ TEST 1 — Showing SAFE, please check FDA data")
 
 
 # ============================================================
 # TEST 2: DrugInteractionChecker
-# প্রশ্ন: warfarin + ibuprofen একসাথে দেওয়া কি safe?
-# সঠিক উত্তর: HIGH (না, dangerous)
+# Question: Is it safe to give warfarin + ibuprofen together?
+# Expected Result: HIGH (No, dangerous)
 # ============================================================
 print("\n[TEST 2] Drug Interaction Checker")
-print("প্রশ্ন: warfarin + ibuprofen একসাথে দেওয়া কি safe?")
+print("Question: Is it safe to combine warfarin + ibuprofen?")
 
 tool2 = TOOL_REGISTRY["drug_interaction_checker"]
 result2 = tool2(drug1="warfarin", drug2="ibuprofen")
@@ -50,27 +50,27 @@ print(f"\nStatus   : {result2.status}")
 print(f"Reasoning: {result2.reasoning[:200]}")
 
 if result2.status in ["HIGH", "N-A", "CONTRAINDICATED"]:
-    print("✓ TEST 2 PASSED — Tool সঠিকভাবে interaction ধরেছে")
+    print("✓ TEST 2 PASSED — Tool correctly detected the interaction")
 else:
-    print(f"△ TEST 2 — Status: {result2.status} (SAFE দেখালে RxNorm data নেই)")
+    print(f"△ TEST 2 — Status: {result2.status} (If showing SAFE, RxNorm data is missing)")
 
 
 # ============================================================
 # TEST 3: Safe drug check
-# প্রশ্ন: acetaminophen + warfarin কেমন?
-# সঠিক উত্তর: MODERATE (সাবধানে দেওয়া যায়)
+# Question: How is acetaminophen + warfarin?
+# Expected Result: MODERATE (Can be given with caution)
 # ============================================================
 print("\n[TEST 3] Safe Drug Interaction Check")
-print("প্রশ্ন: warfarin + acetaminophen একসাথে কেমন?")
+print("Question: How is the combination of warfarin + acetaminophen?")
 
 result3 = tool2(drug1="warfarin", drug2="acetaminophen")
 
 print(f"\nStatus   : {result3.status}")
 print(f"Reasoning: {result3.reasoning[:200]}")
-print("(ibuprofen এর চেয়ে safer হওয়া উচিত)")
+print("(Should be safer than ibuprofen)")
 
 
 print("\n" + "=" * 60)
-print("Test শেষ!")
-print("cache\\ folder এ .json files দেখো — সেখানে API responses saved আছে")
+print("Test Complete!")
+print("Check the cache\\ folder for .json files — API responses are saved there")
 print("=" * 60)
